@@ -96,9 +96,59 @@ st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 분석 내용�
 
 
 # -----------------------------------------------------------------------------
-# [구역 3] 추가 그래프를 위한 빈 공간
+# [구역 3] 10위권 일관객 총합 추이 (영역 그래프)
 # -----------------------------------------------------------------------------
 st.divider()
-st.header("3. (여기에 세 번째 그래프 제목을 입력하세요)")
+st.header("3. 날짜별 10위권 일관객 총합 추이")
+
+# 1. 날짜별 일관객 합계 구하기
+daily_sum = df.groupby('날짜')['일관객'].sum().reset_index()
+
+# 2. 합계가 가장 컸던 날 3일 추출
+top3_days = daily_sum.nlargest(3, '일관객')
+
+# 3. 플롯리 영역 그래프 그리기
+fig3 = px.area(
+    daily_sum, 
+    x='날짜', 
+    y='일관객', 
+    title="날짜별 박스오피스 상위 10편 관객수 총합"
+)
+
+# 4. 합계가 가장 큰 3일에 주석(Annotation) 달기
+for index, row in top3_days.iterrows():
+    date_str = row['날짜'].strftime('%Y-%m-%d')
+    audience_cnt = row['일관객']
+    
+    fig3.add_annotation(
+        x=row['날짜'],
+        y=audience_cnt,
+        text=f"Top: {date_str}", # 표시할 텍스트
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=1,
+        arrowwidth=2,
+        ax=0,
+        ay=-40, # 화살표를 위로 띄우기
+        font=dict(size=12, color="red")
+    )
+
+# 마우스 호버(hover) 정보 커스텀
+fig3.update_traces(
+    hovertemplate="<b>날짜:</b> %{x|%Y-%m-%d}<br><b>총 일관객:</b> %{y:,.0f}명<extra></extra>"
+)
+
+# 그래프 출력
+st.plotly_chart(fig3, use_container_width=True)
+
+# '이 그래프로 알 수 있는 것' 작성란
+st.info("💡 **이 그래프로 알 수 있는 것:** (여기에 분석 내용을 작성해 주세요)")
+
+
+# -----------------------------------------------------------------------------
+# [구역 4] 추가 그래프를 위한 빈 공간
+# -----------------------------------------------------------------------------
+st.divider()
+st.header("4. (여기에 네 번째 그래프 제목을 입력하세요)")
 st.write("앞으로 추가될 그래프와 분석을 넣을 공간입니다.")
 # TODO: 새로운 데이터 필터링 및 그래프 코드를 이곳에 추가하세요.
